@@ -13,7 +13,10 @@ Options
 :tr:
    Text repeat.
    Can be 'none' or 'repeat'
+:ws: word spacing
+:ls: line spacing
 :bg: Background color
+:p: Padding in box for text
 :b: Border color
 :fs: Font size
 :tm: Timeout in seconds - hown many wait before reply generated tile

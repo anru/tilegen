@@ -13,7 +13,7 @@ OUTLINE_COLOR = 'red'
 TEXT_REPEAT = 'none'
 
 # settings for TEXT_REPEAT = repeat
-TX_PADDING = 5
+TX_PADDING = 10
 WORD_SPACING = 10
 LINE_SPACING = 14
 

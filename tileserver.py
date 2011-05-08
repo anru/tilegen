@@ -44,12 +44,15 @@ def tile():
     font_size = int(request.args.get('fs', app.config['FONT_SIZE']))
     tx_color = parse_color(request.args.get('c', app.config['TEXT_COLOR']))
     outline_color = parse_color(request.args.get('b', app.config['OUTLINE_COLOR']))
+    word_spacing = int(request.args.get('ws', app.config['WORD_SPACING']))
+    line_spacing = int(request.args.get('ls', app.config['LINE_SPACING']))
+    padding = int(request.args.get('p', app.config['TX_PADDING']))
     
     timeout = request.args.get('tm')
 
     hash_key = md5('_'.join( (unicode(a) for a in [w, h, text, bg_color, font_size, \
                                                     tx_color, outline_color, text_repeat, \
-                                                    app.config['TX_PADDING'], app.config['WORD_SPACING'], app.config['LINE_SPACING']]) )).hexdigest()
+                                                    app.config['TX_PADDING'], word_spacing, line_spacing]) )).hexdigest()
     
     if not timeout and hash_key == request.headers.get('If-None-Match'):
         return Response(status=304)
@@ -74,10 +77,9 @@ def tile():
             ty = (h - textsize[1])/2
             draw.text( (tx, ty), text, font=font, fill=tx_color)
         elif text_repeat == 'repeat':
-            padding = app.config['TX_PADDING']
-            word_spacing = app.config['WORD_SPACING']
-            line_spacing = app.config['LINE_SPACING']
-            wc = max((w - padding) / (textsize[0] + word_spacing) + 1, 1)
+            
+            
+            wc = max((w - padding) / (textsize[0] + word_spacing), 1)
             hc = max((h - padding) / (textsize[1] + line_spacing), 1)
 
             xmargin = abs((w - ((textsize[0] + word_spacing)*wc - word_spacing))/2)
