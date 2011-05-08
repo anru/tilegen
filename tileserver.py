@@ -6,6 +6,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from hashlib import md5
+from time import sleep
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -44,11 +45,13 @@ def tile():
     tx_color = parse_color(request.args.get('c', app.config['TEXT_COLOR']))
     outline_color = parse_color(request.args.get('b', app.config['OUTLINE_COLOR']))
     
+    timeout = request.args.get('tm')
+
     hash_key = md5('_'.join( (unicode(a) for a in [w, h, text, bg_color, font_size, \
                                                     tx_color, outline_color, text_repeat, \
                                                     app.config['TX_PADDING'], app.config['WORD_SPACING'], app.config['LINE_SPACING']]) )).hexdigest()
     
-    if hash_key == request.headers.get('If-None-Match'):
+    if not timeout and hash_key == request.headers.get('If-None-Match'):
         return Response(status=304)
     
     tile_path = os.path.join(get_tiles_dir(), hash_key + '.png')
@@ -85,6 +88,9 @@ def tile():
         img.save(tile_path, 'PNG')
         del draw
     
+    if timeout:
+        sleep(float(timeout))
+
     f = open(tile_path, 'r')
     image_data = f.read()
     f.close()
