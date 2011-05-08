@@ -80,8 +80,8 @@ def tile():
             wc = max((w - padding) / (textsize[0] + word_spacing) + 1, 1)
             hc = max((h - padding) / (textsize[1] + line_spacing), 1)
 
-            xmargin = abs((w - (textsize[0] + word_spacing)*wc)/2)
-            ymargin = abs((h - (textsize[1] + line_spacing)*hc)/2)
+            xmargin = abs((w - ((textsize[0] + word_spacing)*wc - word_spacing))/2)
+            ymargin = abs((h - ((textsize[1] + line_spacing)*hc - line_spacing))/2)
             
             for i in xrange(0, wc):
                 tx = xmargin + i*(textsize[0] + word_spacing)
