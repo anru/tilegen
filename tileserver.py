@@ -36,8 +36,8 @@ def get_tiles_dir():
 
 @app.route("/tile")
 def tile():
-    w = int(request.args.get('w', 256))
-    h = int(request.args.get('h', 256))
+    w = int(request.args.get('w', app.config['TILE_WIDTH']))
+    h = int(request.args.get('h', app.config['TILE_HEIGHT']))
     text = request.args.get('t', 'T-X')
     text_repeat = request.args.get('tr', app.config['TEXT_REPEAT'])
     bg_color = parse_color(request.args.get('bg', app.config['BG_COLOR']))
@@ -56,8 +56,9 @@ def tile():
     
     tile_path = os.path.join(get_tiles_dir(), hash_key + '.png')
     
-    if not os.path.exists(tile_path):
+    generated = False
     
+    if not os.path.exists(tile_path) or request.args.get('d'):
         img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
         draw = ImageDraw.Draw(img)
         
@@ -77,16 +78,20 @@ def tile():
             word_spacing = app.config['WORD_SPACING']
             line_spacing = app.config['LINE_SPACING']
             wc = max((w - padding) / (textsize[0] + word_spacing) + 1, 1)
-            hc = max((h - padding) / (textsize[1] + line_spacing) + 1, 1)
+            hc = max((h - padding) / (textsize[1] + line_spacing), 1)
+
+            xmargin = abs((w - (textsize[0] + word_spacing)*wc)/2)
+            ymargin = abs((h - (textsize[1] + line_spacing)*hc)/2)
             
             for i in xrange(0, wc):
-                tx = padding + i*(textsize[0] + word_spacing)
+                tx = xmargin + i*(textsize[0] + word_spacing)
                 for j in xrange(0, hc):
-                    ty = padding + j*(textsize[1] + line_spacing)
+                    ty = ymargin + j*(textsize[1] + line_spacing)
                     draw.text( (tx, ty), text, font=font, fill=tx_color)
             
-        img.save(tile_path, 'PNG')
         del draw
+        img.save(tile_path, 'PNG')
+        generated = True
     
     if timeout:
         sleep(float(timeout))
@@ -98,6 +103,7 @@ def tile():
     response = make_response(image_data)
     response.headers['Content-Type'] = 'image/png'
     response.headers['ETag'] = hash_key
+    response.headers['X-Tile-Generated'] = 'Yes' if generated else 'No'
     return response
     
 

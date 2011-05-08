@@ -2,6 +2,10 @@ DEBUG = True
 TILES_DIR = 'tiles'
 
 # rendering defaults for tiles
+
+TILE_WIDTH = 256
+TILE_HEIGHT = 256
+
 TEXT_COLOR = 'black'
 FONT_SIZE = 24
 BG_COLOR = 'white'
